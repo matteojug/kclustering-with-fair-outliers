@@ -5,6 +5,7 @@ The tester run the clustering algorithms on the instance specified by command li
 $ ./tester -ds=data/real/4area.ds -k=10 -z=0.05 -colorless=tmp/colorless -colored=tmp/colored -fairz=tmp/fairz -colorful=tmp/colorful -coreset=tmp/coreset -overwrite=1
 
 The dataset must be a .ds file (described later), k is the number of clusters and z is the fraction of outliers. For the colored version, each z_a = z. Without -overwrite=1 solutions already computed will be skipped.
+The datasets used in the article are available as a compressed file in the data/real folder.
 If present, each of the following arguments specifies the output directory for the respective test:
  - colorless: run the baselines on the colorless instance
  - colored: from the colorless, force the fairness and recompute the clustering (using the same centers)

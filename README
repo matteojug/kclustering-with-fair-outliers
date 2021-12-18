@@ -1,0 +1,37 @@
+To compile the tester (tested on Ubuntu 20.04, gcc version 9.3.0):
+$ make tester
+
+The tester run the clustering algorithms on the instance specified by command line args:
+$ ./tester -ds=data/real/4area.ds -k=10 -z=0.05 -colorless=tmp/colorless -colored=tmp/colored -fairz=tmp/fairz -colorful=tmp/colorful -coreset=tmp/coreset -overwrite=1
+
+The dataset must be a .ds file (described later), k is the number of clusters and z is the fraction of outliers. For the colored version, each z_a = z. Without -overwrite=1 solutions already computed will be skipped.
+If present, each of the following arguments specifies the output directory for the respective test:
+ - colorless: run the baselines on the colorless instance
+ - colored: from the colorless, force the fairness and recompute the clustering (using the same centers)
+ - fairz: from the colorless, recompute discard extra outliers due to rounding in the color instance; since the number of outliers is ceiled in the colorful version, the colorless version may have less outliers: this fixes it.
+ - colorful: run our algorithm
+ - coreset: compute the coreset and run all the algorithms on it
+
+For each algorithm, the corresponding solution is saved as a JSON file in the specified directory. This file contains all the information about a solution and can be used to compare the performance of the different algorithms.
+
+The datasets are .ds files, formatted as:
+    # Comment lines
+    #@meta_key_1:value_1
+    #@meta_key_2:value_2
+    Name Size Dimensions
+    ColorClasses ColorClass1Name(str) ColorClass2Name ...
+    PointID X_1 ... X_Dimensions Color_1 .. Color_ColorClasses
+    ...
+With meta being arbitrary strings (if needed), Name is the dataset name (e.g. adult), Size is the number of points, and Dimensions the dimensions of each point.
+ColorClasses is the number of different colors, followed by the name of each color class (e.g. for adult: 2 Sex Race).
+Each point is then described as an id, followed by the point coordinates, followed by the point colors (treated as strings). For example, the first lines of adult.ds:
+
+adult 45222 6
+2 race sex
+0 0.034200950931070354 -1.0622948702184187 1.1287528085714997 0.14288836417960854 -0.2187802566102861 -0.07812006020555637 White Male
+1 0.8664168406269813 -1.00743773062647 1.1287528085714997 -0.14673320201323659 -0.2187802566102861 -2.3267380094882686 White Male
+
+If a new dataset is used, it must be first preprocessed to get the required data using:
+$ make minmax_dist
+$ ./minmax_dist <dataset_path.ds>
+In order to create the <dataset_path.ds>.dist file needed by the tester. It contains statistics about min and max distances among the points.
